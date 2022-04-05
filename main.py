@@ -86,8 +86,43 @@ def dataframe_summary():
 
 
 def dataframe_cleaning():
-    # TODO
-    print(df)
+    dirty_df = pd.read_csv("dirtydata.csv")
+    # One way to deal with empty cells is to remove rows that contain empty cells.
+    # Removing a few rows will not have a big impact on the result.
+    # By default, the dropna() method returns a new DataFrame, and will not change the original.
+    # If you want to change the original DataFrame, use the inplace = True argument
+    dirty_df.dropna(inplace=True)
+    # Another way of dealing with empty cells is to insert a new value instead.
+    # This way you do not have to delete entire rows just because of some empty cells.
+    # The fillna() method allows us to replace empty cells with a value:
+    dirty_df.fillna(130, inplace=True)
+    # To only replace empty values for one column, specify the column name for the DataFrame:
+    dirty_df["Calories"].fillna(130, inplace=True)
+    # A common way to replace empty cells, is to calculate the mean, median or mode value of the column.
+    # Pandas uses the mean() median() and mode() methods to calculate the respective values for a specified column:
+    mean_value = dirty_df["Calories"].mean()
+    dirty_df["Calories"].fillna(mean_value, inplace=True)
+    # One way to fix wrong values is to replace them with something else.
+    # To replace wrong data for larger data sets you can create some rules.
+    # For example, set some boundaries for legal values, and replace any values that are outside the boundaries.
+    for x in dirty_df.index:
+        if dirty_df.loc[x, "Duration"] > 60:
+            dirty_df.loc[x, "Duration"] = 60
+    # Another way of handling wrong data is to remove the rows that contain wrong data.
+    for x in dirty_df.index:
+        if dirty_df.loc[x, "Duration"] > 60:
+            dirty_df.drop(x, inplace=True)
+    # To discover duplicates, we can use the duplicated() method.
+    # The duplicated() method returns a Boolean values for each row:
+    print(dirty_df.duplicated())
+    # To remove duplicates:
+    dirty_df.drop_duplicates(inplace=True)
+    # The result from the converting in the example below gave us a NaT value, which can be handled as a NULL value,
+    # and we can remove the row by using the dropna() method.
+    dirty_df['Date'] = pd.to_datetime(dirty_df['Date'])
+    # Remove rows with a NULL value in the "Date" column:
+    dirty_df.dropna(subset=['Date'], inplace=True)
+    print(dirty_df)
 
 
 if __name__ == '__main__':
