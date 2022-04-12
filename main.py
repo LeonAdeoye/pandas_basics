@@ -125,12 +125,19 @@ def dataframe_cleaning():
     print(dirty_df)
 
 
+def dataframe_from_dict():
+    dictionary = {'col1': [1, 2, 3, 4, 5, 6], 'col2': [4, 5, 6, 7, 8, 9], 'col3': [7, 8, 9, 10, 11, 12]}
+    dataframe = pd.DataFrame.from_dict(dictionary)
+    print(dataframe.head())
+
+
 if __name__ == '__main__':
     dataframe_basic()
     dataframe_filtering()
     dataframe_derived()
     dataframe_summary()
     dataframe_cleaning()
+    dataframe_from_dict()
 
 
 
