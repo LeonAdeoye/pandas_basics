@@ -1,4 +1,5 @@
 import pandas as pd
+from numpy import NAN
 
 df = pd.DataFrame(
     {
@@ -125,10 +126,46 @@ def dataframe_cleaning():
     print(dirty_df)
 
 
-def dataframe_from_dict():
-    dictionary = {'col1': [1, 2, 3, 4, 5, 6], 'col2': [4, 5, 6, 7, 8, 9], 'col3': [7, 8, 9, 10, 11, 12]}
+def dataframe_from_dict_with_various_operations():
+    dictionary = {'col1': [100, NAN, NAN, NAN, 5, 6, 6, 6, 2, 77], 'col2': [4, 5, NAN, 7, 8, 9, 1, 1, 7, 7], 'country': ['Japan', 'Brazil', 'Cuba', 'Vietnam', 'Thailand', 'Singapore', 'Hong Kong', 'France', 'Italy', 'Brazil']}
     dataframe = pd.DataFrame.from_dict(dictionary)
-    print(dataframe.head())
+    print(dataframe.head(6))
+    print(f'\nThe first column values of the dataframe created from a dictionary are:\n{dataframe.col1}')
+    print(f'\nThe first and second column values of the dataframe can be accessed using an array of column names:\n{dataframe[["col1", "col2"]] }')
+    # To get unique values in a column:
+    print(dataframe.col1.unique())
+    # Filter rows using an AND clause of two different values:
+    print(f'Filter on specific values across columns => dataframe[(dataframe.col1 == 6) & (dataframe.col2 == 1)]: {dataframe[(dataframe.col1 == 6) & (dataframe.col2 == 1)]}')
+    print(f'Get the first row (0) and first column (0) cell value => dataframe.iloc[0, 0]: {dataframe.iloc[0, 0]}')
+    print(f'Get the last row (-1) and the first column (0) cell value => dataframe.iloc[-1, 0]:{dataframe.iloc[-1, 0]}')
+    print(f'Get the last row (-1) and last column (-1) cell value => dataframe.iloc[-1, -1]: {dataframe.iloc[-1, -1]}')
+    print(f'Get rows 4 to 5 (3:6) and last column (-1) cell value => dataframe.iloc[3:6, -1]:\n{dataframe.iloc[3:6, -1]}')
+
+    # Instead of 0-based integer index, you can create your own index "in place" in a copy of you dataframe.
+    country_dataframe = dataframe.copy()
+    country_dataframe.set_index('country', inplace=True)
+    print(country_dataframe.head())
+    print(f'Get the first row (0) and first column (0) cell value => country_dataframe.iloc[0, 0]: {country_dataframe.iloc[0, 0]}')
+    print(f'Get the last row (-1) and the first column (0) cell value => country_dataframe.iloc[-1, 0]: {country_dataframe.iloc[-1, 0]}')
+    print(f'Get the last row (-1) and last column (-1) cell value => country_dataframe.iloc[-1, -1]: {country_dataframe.iloc[-1, -1]}')
+    print(f'Get rows 4 to 5 (3:6) and last column (-1) cell value => country_dataframe.iloc[3:6, -1]:\n{country_dataframe.iloc[3:6, -1]}')
+    print(f'get all rows with brazil in country using index:\n{country_dataframe.loc["Brazil"]}')
+    print(f'get a summary of null column values (Numpy.NAN) => country_dataframe.isnull().sum():\n{country_dataframe.isnull().sum()}')
+    country_dataframe.dropna(inplace=True)
+    print(f'get a summary of null column values (Numpy.NAN) => country_dataframe.isnull().sum():\n{country_dataframe.isnull().sum()}')
+    # Condition-based updating using apply function and lambda
+    country_dataframe["lambda_binary"] = country_dataframe["col1"].apply(lambda x: 1 if x % 2 == 0 else 0)
+    print(f'Run head on specific value == 0:\n{country_dataframe[country_dataframe["lambda_binary"] == 0].head()}')
+    print(f'Run head on specific value == 1:\n{country_dataframe[country_dataframe["lambda_binary"] == 1].head()}')
+    # Output dataframe:
+    country_dataframe.to_json('countries.json')
+    print(country_dataframe.to_json())
+    country_dataframe.to_csv('countries.csv')
+    print(country_dataframe.to_csv())
+    country_dataframe.to_html('countries.html')
+    print(country_dataframe.to_html())
+    # To delete a dataframe
+    del country_dataframe
 
 
 if __name__ == '__main__':
@@ -137,7 +174,7 @@ if __name__ == '__main__':
     dataframe_derived()
     dataframe_summary()
     dataframe_cleaning()
-    dataframe_from_dict()
+    dataframe_from_dict_with_various_operations()
 
 
 
